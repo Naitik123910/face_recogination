@@ -3,4 +3,5 @@ opencv-python
 numpy
 pandas
 matplotlib
-deepface
+face_recognition
+

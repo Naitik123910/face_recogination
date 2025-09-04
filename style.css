@@ -1,0 +1,49 @@
+/* style.css */
+
+/* Page background */
+.stApp {
+    background-color: #f0f2f6;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Title style */
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+/* Subheaders */
+h2 {
+    color: #34495e;
+    font-weight: bold;
+}
+
+/* Buttons */
+.stButton button {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+.stButton button:hover {
+    background-color: #45a049;
+}
+
+/* Dataframe table */
+.stDataFrame div.row_widget.stDataFrame {
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px #dcdcdc;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+/* Info/warning/success messages */
+.stAlert {
+    border-radius: 10px;
+    padding: 10px;
+}
