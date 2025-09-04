@@ -65,7 +65,7 @@ def mark_attendance(name):
 
 st.title("🎓 Face Recognition Attendance System")
 
-# -------- Take Attendance (Multiple Faces) --------
+# Take Attendance (Multiple Faces) 
 if st.button("Take Attendance"):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -114,7 +114,7 @@ if st.button("Take Attendance"):
                 if not detected_students and not already_marked:
                     st.error("Unknown face(s) detected ❌")
 
-# -------- Attendance Viewer --------
+# Attendance Viewer 
 st.markdown("---")
 st.subheader("📒 Attendance Viewer")
 
@@ -134,7 +134,7 @@ else:
 # Unique dates
 unique_dates = sorted(df_all["Date"].dt.date.unique()) if not df_all.empty else []
 
-# -------- Safe placeholder container --------
+# Safe placeholder container 
 viewer_container = st.empty()
 
 with viewer_container:
@@ -167,6 +167,6 @@ with viewer_container:
     else:
         st.info("No attendance records yet. Slider will not be displayed.")
 
-# -------- Full attendance history --------
+# Full attendance history 
 if st.checkbox("Show full attendance history"):
     st.dataframe(df_all.reset_index(drop=True))
