@@ -14,15 +14,13 @@ from datetime import datetime
 import face_recognition
 import matplotlib.pyplot as plt
 
-# -------------------------------
 # Constants
-# -------------------------------
+
 PHOTOS_FOLDER = "photos"
 CSV_FILE = "attendance.csv"
 
-# -------------------------------
 # Ensure folders and CSV exist
-# -------------------------------
+
 if not os.path.exists(PHOTOS_FOLDER):
     os.makedirs(PHOTOS_FOLDER)
 
@@ -30,9 +28,8 @@ if not os.path.isfile(CSV_FILE):
     with open(CSV_FILE, "w") as f:
         f.write("Name,Date,Time\n")
 
-# -------------------------------
 # Load student images and encodings
-# -------------------------------
+
 student_names = []
 known_encodings = []
 
@@ -45,9 +42,9 @@ for file in os.listdir(PHOTOS_FOLDER):
         encodings = face_recognition.face_encodings(image)
         known_encodings.append(encodings[0] if encodings else None)
 
-# -------------------------------
+
 # Function to mark attendance
-# -------------------------------
+
 def mark_attendance(name):
     date_str = datetime.now().strftime("%Y-%m-%d")
     time_str = datetime.now().strftime("%H:%M:%S")
@@ -64,9 +61,8 @@ def mark_attendance(name):
         f.write(f"{name},{date_str},{time_str}\n")
     return True  # Newly marked
 
-# -------------------------------
 # Streamlit UI
-# -------------------------------
+
 st.title("🎓 Face Recognition Attendance System")
 
 # -------- Take Attendance (Multiple Faces) --------
