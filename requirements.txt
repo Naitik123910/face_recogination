@@ -4,4 +4,3 @@ numpy
 pandas
 matplotlib
 face_recognition
-

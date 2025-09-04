@@ -1,21 +1,18 @@
 import os
 import streamlit as st
+# Load external CSS
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css("style.css")
+
+import cv2
 import numpy as np
 import pandas as pd
 from datetime import datetime
 import face_recognition
 import matplotlib.pyplot as plt
-import cv2
-
-# -------------------------------
-# Load external CSS
-# -------------------------------
-def load_css(file_name):
-    if os.path.isfile(file_name):
-        with open(file_name) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-load_css("style.css")
 
 # -------------------------------
 # Constants
@@ -73,50 +70,53 @@ def mark_attendance(name):
 st.title("🎓 Face Recognition Attendance System")
 
 # -------- Take Attendance (Multiple Faces) --------
-st.subheader("📸 Take Attendance")
-
-uploaded_file = st.camera_input("Capture a photo for attendance")
-if uploaded_file is not None:
-    # Convert uploaded file to numpy array
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    face_locations = face_recognition.face_locations(rgb_frame)
-    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-
-    if len(face_encodings) == 0:
-        st.error("No face detected ❌")
+if st.button("Take Attendance"):
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        st.error("Cannot access camera.")
     else:
-        # Load today's attendance
-        try:
-            df_today = pd.read_csv(CSV_FILE)
-            df_today = df_today[df_today["Date"] == datetime.now().strftime("%Y-%m-%d")]
-        except Exception:
-            df_today = pd.DataFrame(columns=["Name", "Date", "Time"])
+        ret, frame = cap.read()
+        cap.release()
 
-        detected_students = []
-        already_marked = []
+        if not ret:
+            st.error("Failed to capture frame from camera.")
+        else:
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            face_locations = face_recognition.face_locations(rgb_frame)
+            face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
 
-        for face_encoding in face_encodings:
-            matches = face_recognition.compare_faces(known_encodings, face_encoding)
-            distances = face_recognition.face_distance(known_encodings, face_encoding)
-            best_idx = np.argmin(distances) if len(distances) > 0 else -1
+            if len(face_encodings) == 0:
+                st.error("No face detected ❌")
+            else:
+                # Load today's attendance
+                try:
+                    df_today = pd.read_csv(CSV_FILE)
+                    df_today = df_today[df_today["Date"] == datetime.now().strftime("%Y-%m-%d")]
+                except Exception:
+                    df_today = pd.DataFrame(columns=["Name", "Date", "Time"])
 
-            if best_idx >= 0 and matches[best_idx]:
-                student_name = student_names[best_idx]
-                if student_name not in df_today["Name"].values:
-                    mark_attendance(student_name)
-                    detected_students.append(student_name)
-                else:
-                    already_marked.append(student_name)
+                detected_students = []
+                already_marked = []
 
-        if detected_students:
-            st.success(f"Attendance marked for: {', '.join(detected_students)} ✅")
-        if already_marked:
-            st.warning(f"Already marked today: {', '.join(already_marked)} ⚠️")
-        if not detected_students and not already_marked:
-            st.error("Unknown face(s) detected ❌")
+                for face_encoding in face_encodings:
+                    matches = face_recognition.compare_faces(known_encodings, face_encoding)
+                    distances = face_recognition.face_distance(known_encodings, face_encoding)
+                    best_idx = np.argmin(distances) if len(distances) > 0 else -1
+
+                    if best_idx >= 0 and matches[best_idx]:
+                        student_name = student_names[best_idx]
+                        if student_name not in df_today["Name"].values:
+                            mark_attendance(student_name)
+                            detected_students.append(student_name)
+                        else:
+                            already_marked.append(student_name)
+
+                if detected_students:
+                    st.success(f"Attendance marked for: {', '.join(detected_students)} ✅")
+                if already_marked:
+                    st.warning(f"Already marked today: {', '.join(already_marked)} ⚠")
+                if not detected_students and not already_marked:
+                    st.error("Unknown face(s) detected ❌")
 
 # -------- Attendance Viewer --------
 st.markdown("---")
@@ -138,6 +138,7 @@ else:
 # Unique dates
 unique_dates = sorted(df_all["Date"].dt.date.unique()) if not df_all.empty else []
 
+# -------- Safe placeholder container --------
 viewer_container = st.empty()
 
 with viewer_container:
@@ -151,7 +152,7 @@ with viewer_container:
         df_selected = df_all[df_all["Date"].dt.date == selected_date]
 
         if not df_selected.empty:
-            st.write(f"Attendance for **{selected_date}**")
+            st.write(f"Attendance for *{selected_date}*")
             st.dataframe(df_selected.reset_index(drop=True))
 
             # Pie chart summary
