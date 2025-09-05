@@ -1,3 +1,4 @@
+# conda activate face-regos_2
 import os
 import streamlit as st
 # Load external CSS
