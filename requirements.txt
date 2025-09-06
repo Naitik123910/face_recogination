@@ -4,3 +4,5 @@ numpy
 pandas
 matplotlib
 face_recognition
+# # conda activate face-regos_2
+## face_recogintion
